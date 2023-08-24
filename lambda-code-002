@@ -1,0 +1,15 @@
+import json
+
+def lambda_handler(event, context):
+    # TODO implement
+    
+    if "tags" not in event:
+        print("delete ec2 since ec2 has no tags")
+    else:
+    
+        tagsofec2=event["detail"]["requestParameters"]["tagSpecificationSet"]["items"][0]["tags"]
+    
+        if "createdby" not in tagsofec2:
+            print("delete ec2 since ec2 doesnt have createdby tag")
+        else:
+            print("keep the ec2")

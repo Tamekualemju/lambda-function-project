@@ -1,0 +1,25 @@
+
+Avinash Mamidi
+  12:05 AM
+import json
+import boto3
+
+
+def lambda_handler(event, context):
+    # TODO implement
+
+    ec2client = boto3.client('ec2')
+    instanceid = event["detail"]["responseElements"]["instancesSet"]["items"][0]["instanceId"]
+
+    if "tags" not in str(event):
+        ec2client.terminate_instances(InstanceIds=[instanceid])
+        print("delete ec2 since ec2 has no tags")
+    else:
+
+        tagsofec2 = event["detail"]["requestParameters"]["tagSpecificationSet"]["items"][0]["tags"]
+
+        if "createdby" and "team" and "purpose" not in str(tagsofec2):
+            print("delete ec2 since ec2 doesnt have createdby tag")
+            ec2client.terminate_instances(InstanceIds=[instanceid ])
+        else:
+            print("keep the ec2")
