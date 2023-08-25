@@ -1,25 +1,24 @@
-
 Avinash Mamidi
   12:05 AM
 import json
-import boto3
+import boto3                                                                                  # <--- we have to import boto3 and json.
 
 
-def lambda_handler(event, context):
+def lambda_handler(event, context):                                                           #<---- this is the function.
     # TODO implement
 
-    ec2client = boto3.client('ec2')
+    ec2client = boto3.client('ec2')                                                            # <---- this is the ec2 client, it is respondible to enable communication between lambda and boto3 / python.  if we have to communicate with S3 any other resource, we have to specify the client.  
     instanceid = event["detail"]["responseElements"]["instancesSet"]["items"][0]["instanceId"]
 
     if "tags" not in str(event):
-        ec2client.terminate_instances(InstanceIds=[instanceid])
-        print("delete ec2 since ec2 has no tags")
+        ec2client.terminate_instances(InstanceIds=[instanceid])                                #<---- this line is respensible to delete uncomplience instances
+        print("delete ec2 since ec2 has no tags")                                              #<---- if there are no tags, python delete the instance and stop at this level, it will not go to else.
     else:
 
-        tagsofec2 = event["detail"]["requestParameters"]["tagSpecificationSet"]["items"][0]["tags"]
+        tagsofec2 = event["detail"]["requestParameters"]["tagSpecificationSet"]["items"][0]["tags"]      #<----- if the are tags, it is going to find the tags of the newly created ec2 instance based on the specified events. this also happend on the fly
 
-        if "createdby" and "team" and "purpose" not in str(tagsofec2):
+        if "createdby" and "team" and "purpose" not in str(tagsofec2):                        #<---- if the tag does not meet the event requirement, the below line will terminate the insance
             print("delete ec2 since ec2 doesnt have createdby tag")
-            ec2client.terminate_instances(InstanceIds=[instanceid ])
+            ec2client.terminate_instances(InstanceIds=[instanceid ])                          #<--- ID of the instance the was created with uncorespond tags will be retrieve on the fly and use to delete that respective instance.
         else:
-            print("keep the ec2")
+            print("keep the ec2")                                                             #<<<<---- Else, keep the instance because all the reqirements are met.
